@@ -9,10 +9,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 
 private const val JWT_SECRET = "J241W315T-S24ECRE34T"
-private val ALGORITHM = Algorithm.HMAC256(JWT_SECRET)
-
-private const val ISSUER = "ktor-app-andefracingbackend"
-
+val ALGORITHM = Algorithm.HMAC256(JWT_SECRET)
+const val ISSUER = "ktor-app-andefracingbackend"
 private const val ERROR_MESSAGE = "Invalid token"
 
 fun AuthenticationConfig.jwtConfig(authJwt: String, audience: String) {
