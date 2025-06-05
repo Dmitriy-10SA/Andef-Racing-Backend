@@ -9,4 +9,6 @@ object Client {
     const val PHONE = "phone"
     const val EMAIL = "email"
     const val PASSWORD = "password"
+    const val BIRTHDAY = "birthday"
+    const val GENDER = "gender"
 }

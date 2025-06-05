@@ -1,5 +1,6 @@
 package com.andef.dto.auth.client
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,5 +21,7 @@ data class ClientRegisterRequest(
     val name: String,
     val phone: String,
     val email: String,
-    val password: String
+    val password: String,
+    val birthday: LocalDate,
+    val gender: String
 )

@@ -16,11 +16,14 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.kotlin.datetime)
+    implementation(libs.kotlinx.kotlin.datetime)
     implementation(libs.favre.bcrypt)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.serialization.gson)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.postgresql)
     implementation(libs.h2)
