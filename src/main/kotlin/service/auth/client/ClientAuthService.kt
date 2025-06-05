@@ -12,22 +12,24 @@ class ClientAuthService(
     private val connection: Connection,
     private val repository: ClientAuthRepository = ClientAuthRepositoryImpl(connection)
 ) {
-    fun login(clientLoginRequest: ClientLoginRequest): ClientAuthResponse? {
+    suspend fun login(clientLoginRequest: ClientLoginRequest): ClientAuthResponse? {
         val phone = clientLoginRequest.phone
         val password = clientLoginRequest.password
         return repository.login(phone, password)
     }
 
-    fun register(clientRegisterRequest: ClientRegisterRequest): ClientAuthResponse? {
+    suspend fun register(clientRegisterRequest: ClientRegisterRequest): ClientAuthResponse? {
         val surname = clientRegisterRequest.surname
         val name = clientRegisterRequest.name
         val phone = clientRegisterRequest.phone
         val email = clientRegisterRequest.email
         val password = clientRegisterRequest.password
-        return repository.register(surname, name, phone, email, password)
+        val birthday = clientRegisterRequest.birthday
+        val gender = clientRegisterRequest.gender
+        return repository.register(surname, name, phone, email, password, birthday, gender)
     }
 
-    fun passwordChange(clientPasswordChangeRequest: ClientPasswordChangeRequest): ClientAuthResponse? {
+    suspend fun passwordChange(clientPasswordChangeRequest: ClientPasswordChangeRequest): ClientAuthResponse? {
         val phone = clientPasswordChangeRequest.phone
         val password = clientPasswordChangeRequest.password
         return repository.passwordChange(phone, password)

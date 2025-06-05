@@ -9,12 +9,15 @@ import com.andef.config.SecurityConfig.passwordVerify
 import com.andef.dto.auth.client.ClientAuthResponse
 import com.andef.model.Client
 import com.auth0.jwt.JWT
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 import java.sql.Connection
+import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement.RETURN_GENERATED_KEYS
 
 class ClientAuthRepositoryImpl(private val connection: Connection) : ClientAuthRepository {
-    override fun login(phone: String, password: String): ClientAuthResponse? {
+    override suspend fun login(phone: String, password: String): ClientAuthResponse? {
         val resultSet = selectClientByPhone(phone)
         return if (resultSet.next()) {
             val clientId = resultSet.getInt(Client.ID)
@@ -26,20 +29,23 @@ class ClientAuthRepositoryImpl(private val connection: Connection) : ClientAuthR
         } else null
     }
 
-    override fun register(
+    override suspend fun register(
         surname: String,
         name: String,
         phone: String,
         email: String,
-        password: String
+        password: String,
+        birthday: LocalDate,
+        gender: String
     ): ClientAuthResponse? {
         val resultSet = selectClientByPhoneOrEmail(phone, email)
         return if (!resultSet.next()) {
             val hashedPassword = passwordHash(password)
-            val params = mapOf(1 to surname, 2 to name, 3 to phone, 4 to email, 5 to hashedPassword)
+            val params = mapOf(1 to surname, 2 to name, 3 to phone, 4 to email, 5 to hashedPassword, 7 to gender)
             val statement = connection.prepareStatement(INSERT_CLIENT, RETURN_GENERATED_KEYS)
             val rowsInserted = statement.apply {
                 params.forEach { i, param -> setString(i, param) }
+                setDate(6, Date.valueOf(birthday.toJavaLocalDate()))
             }.executeUpdate()
             when (rowsInserted > 0) {
                 true -> {
@@ -55,7 +61,7 @@ class ClientAuthRepositoryImpl(private val connection: Connection) : ClientAuthR
         } else null
     }
 
-    override fun passwordChange(phone: String, password: String): ClientAuthResponse? {
+    override suspend fun passwordChange(phone: String, password: String): ClientAuthResponse? {
         val resultSet = selectClientByPhone(phone)
         return if (resultSet.next()) {
             val clientId = resultSet.getInt(Client.ID)
@@ -94,7 +100,8 @@ class ClientAuthRepositoryImpl(private val connection: Connection) : ClientAuthR
                 " WHERE ${Client.ID} = ?"
 
         private const val INSERT_CLIENT = "INSERT INTO ${Client.TABLE_NAME} (${Client.SURNAME}, ${Client.NAME}," +
-                " ${Client.PHONE}, ${Client.EMAIL}, ${Client.PASSWORD}) VALUES (?, ?, ?, ?, ?)"
+                " ${Client.PHONE}, ${Client.EMAIL}, ${Client.PASSWORD}, ${Client.BIRTHDAY}, ${Client.GENDER})" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?)"
 
         private fun generateClientToken(clientId: Int) = JWT
             .create()
