@@ -1,8 +1,8 @@
 package com.andef.route.club.common
 
 import com.andef.config.SecurityConfig.CLIENT_AUTH_JWT
+import com.andef.route.requestWithParameter
 import com.andef.service.club.common.CommonClubService
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -40,9 +40,11 @@ private fun Route.configureCommonGetAllClubs(service: CommonClubService, authJwt
 private fun Route.configureCommonGetAllCostsInClub(service: CommonClubService, authJwt: String) {
     authenticate(authJwt) {
         get("/all-costs-in-club/{clubId}") {
-            requestWithClubId { clubId ->
-                call.respond(service.getAllCostsInClub(clubId))
-            }
+            requestWithParameter(
+                parameter = "clubId",
+                transformFun = { it.toInt() },
+                action = { call.respond(service.getAllCostsInClub(it)) }
+            )
         }
     }
 }
@@ -50,19 +52,11 @@ private fun Route.configureCommonGetAllCostsInClub(service: CommonClubService, a
 private fun Route.configureCommonGetAllEmployeesInClub(service: CommonClubService, authJwt: String) {
     authenticate(authJwt) {
         get("/all-employees-in-club/{clubId}") {
-            requestWithClubId { clubId ->
-                call.respond(service.getAllEmployeesInClub(clubId))
-            }
+            requestWithParameter(
+                parameter = "clubId",
+                transformFun = { it.toInt() },
+                action = { call.respond(service.getAllEmployeesInClub(it)) }
+            )
         }
     }
-}
-
-private suspend fun RoutingContext.requestWithClubId(action: suspend (Int) -> Unit) {
-    call.parameters["clubId"]?.let {
-        try {
-            action(it.toInt())
-        } catch (_: Exception) {
-            call.respond(HttpStatusCode.BadRequest)
-        }
-    } ?: call.respond(HttpStatusCode.BadRequest)
 }
