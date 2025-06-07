@@ -1,14 +1,7 @@
 package com.andef.repository.club.common
 
-import com.andef.dto.club.common.ClubDto
-import com.andef.dto.club.common.CostDto
-import com.andef.dto.club.common.EmployeeDto
-import com.andef.dto.club.common.GameDto
-import com.andef.model.Club
-import com.andef.model.Cost
-import com.andef.model.Employee
-import com.andef.model.EmployeeType
-import com.andef.model.Game
+import com.andef.dto.club.common.*
+import com.andef.model.*
 import java.sql.Connection
 
 class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubRepository {
@@ -16,15 +9,30 @@ class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubR
         val resultSet = connection.prepareStatement(SELECT_ALL_CLUBS).executeQuery()
         return mutableListOf<ClubDto>().apply {
             while (resultSet.next()) {
+                val clubId = resultSet.getInt(Club.ID)
+                val photosResultSet = connection.prepareStatement(SELECT_ALL_PHOTOS_BY_CLUB_ID).apply {
+                    setInt(1, clubId)
+                }.executeQuery()
+                val photos = mutableListOf<PhotoDto>().apply {
+                    while (photosResultSet.next()) {
+                        add(
+                            PhotoDto(
+                                id = photosResultSet.getInt(ClubPhoto.ID),
+                                link = photosResultSet.getString(ClubPhoto.LINK)
+                            )
+                        )
+                    }
+                }.toList()
                 add(
                     ClubDto(
-                        id = resultSet.getInt(Club.ID),
+                        id = clubId,
                         name = resultSet.getString(Club.NAME),
                         vkLink = resultSet.getString(Club.VK_LINK),
                         telegramLink = resultSet.getString(Club.TELEGRAM_LINK),
                         phone = resultSet.getString(Club.PHONE),
                         address = resultSet.getString(Club.ADDRESS),
-                        numberOfEquipment = resultSet.getInt(Club.NUMBER_OF_EQUIPMENT)
+                        numberOfEquipment = resultSet.getInt(Club.NUMBER_OF_EQUIPMENT),
+                        photos = photos
                     )
                 )
             }
@@ -97,5 +105,7 @@ class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubR
         private const val SELECT_EMPLOYEE_TYPE_NAME_BY_EMPLOYEE_TYPE_ID = "SELECT * FROM ${EmployeeType.TABLE_NAME}" +
                 " WHERE ${EmployeeType.ID} = ?"
         private const val SELECT_ALL_GAMES = "SELECT * FROM ${Game.TABLE_NAME}"
+        private const val SELECT_ALL_PHOTOS_BY_CLUB_ID =
+            "SELECT * FROM ${ClubPhoto.TABLE_NAME} WHERE ${ClubPhoto.CLUB_ID} = ?"
     }
 }

@@ -10,5 +10,6 @@ data class ClubDto(
     val telegramLink: String,
     val phone: String,
     val address: String,
-    val numberOfEquipment: Int
+    val numberOfEquipment: Int,
+    val photos: List<PhotoDto>
 )
