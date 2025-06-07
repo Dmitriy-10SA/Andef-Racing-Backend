@@ -11,4 +11,5 @@ class CommonClubService(
     suspend fun getAllClubs() = repository.getAllClubs()
     suspend fun getAllCostsInClub(clubId: Int) = repository.getAllCostsInClub(clubId)
     suspend fun getAllEmployeesInClub(clubId: Int) = repository.getAllEmployeesInClub(clubId)
+    suspend fun getAllGames() = repository.getAllGames()
 }

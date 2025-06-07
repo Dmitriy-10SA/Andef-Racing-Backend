@@ -3,10 +3,12 @@ package com.andef.repository.club.common
 import com.andef.dto.club.common.ClubDto
 import com.andef.dto.club.common.CostDto
 import com.andef.dto.club.common.EmployeeDto
+import com.andef.dto.club.common.GameDto
 import com.andef.model.Club
 import com.andef.model.Cost
 import com.andef.model.Employee
 import com.andef.model.EmployeeType
+import com.andef.model.Game
 import java.sql.Connection
 
 class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubRepository {
@@ -72,6 +74,21 @@ class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubR
         }.toList()
     }
 
+    override suspend fun getAllGames(): List<GameDto> {
+        val resultSet = connection.prepareStatement(SELECT_ALL_GAMES).executeQuery()
+        return mutableListOf<GameDto>().apply {
+            while (resultSet.next()) {
+                add(
+                    GameDto(
+                        id = resultSet.getInt(Game.ID),
+                        name = resultSet.getString(Game.NAME),
+                        description = resultSet.getString(Game.DESCRIPTION)
+                    )
+                )
+            }
+        }.toList()
+    }
+
     companion object {
         private const val SELECT_ALL_CLUBS = "SELECT * FROM ${Club.TABLE_NAME}"
         private const val SELECT_ALL_COSTS_BY_CLUB_ID = "SELECT * FROM ${Cost.TABLE_NAME} WHERE ${Cost.CLUB_ID} = ?"
@@ -79,5 +96,6 @@ class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubR
                 "WHERE ${Cost.CLUB_ID} = ?"
         private const val SELECT_EMPLOYEE_TYPE_NAME_BY_EMPLOYEE_TYPE_ID = "SELECT * FROM ${EmployeeType.TABLE_NAME}" +
                 " WHERE ${EmployeeType.ID} = ?"
+        private const val SELECT_ALL_GAMES = "SELECT * FROM ${Game.TABLE_NAME}"
     }
 }

@@ -16,6 +16,15 @@ fun Application.configureCommonClubRoutes(connection: Connection) {
             configureCommonGetAllClubs(service, CLIENT_AUTH_JWT)
             configureCommonGetAllCostsInClub(service, CLIENT_AUTH_JWT)
             configureCommonGetAllEmployeesInClub(service, CLIENT_AUTH_JWT)
+            configureCommonGetAllGames(service, CLIENT_AUTH_JWT)
+        }
+    }
+}
+
+private fun Route.configureCommonGetAllGames(service: CommonClubService, authJwt: String) {
+    authenticate(authJwt) {
+        get("/all-games") {
+            call.respond(service.getAllGames())
         }
     }
 }
