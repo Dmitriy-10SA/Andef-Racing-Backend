@@ -90,7 +90,8 @@ class CommonClubRepositoryImpl(private val connection: Connection) : CommonClubR
                     GameDto(
                         id = resultSet.getInt(Game.ID),
                         name = resultSet.getString(Game.NAME),
-                        description = resultSet.getString(Game.DESCRIPTION)
+                        description = resultSet.getString(Game.DESCRIPTION),
+                        photoLink = resultSet.getString(Game.PHOTO_LINK)
                     )
                 )
             }

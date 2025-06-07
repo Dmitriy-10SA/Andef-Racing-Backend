@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class GameDto(
     val id: Int,
     val name: String,
-    val description: String
+    val description: String,
+    val photoLink: String
 )
